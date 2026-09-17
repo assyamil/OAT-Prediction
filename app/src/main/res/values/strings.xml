@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">OATPrediction</string>
+    <string name="starter_greeting">Hello Android!</string>
+</resources>
