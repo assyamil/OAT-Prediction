@@ -13,3 +13,89 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Local secrets and environment configuration (safe examples remain trackable)
+.env
+.env.*
+!.env.example
+!.env.template
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.key
+key.properties
+keystore.properties
+signing.properties
+
+# Local Kotlin/Python caches and environments
+.kotlin/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Generated packages, logs, and local database copies
+*.apk
+*.aab
+*.log
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+*.sqlite3
+*.sqlite3-*
+
+# Machine-specific Android Studio device configuration
+/.idea/deviceManager.xml
+/.idea/deploymentTargetSelector.xml
+
+# Private design references, source manuals, and screenshots
+/Design Stitch/
+/docs/screenshots/
+/Panduan Penggunaan OATPrediction.docx
+/PANDUAN PENGGUNAAN APLIKASI.pdf
+~$*
+
+# Private thesis materials and local model-training artifacts
+/SKRIPSI/
+# Local scratch work, drafts, and backups (not part of the app source)
+/tmp/
+*.bak
+*.orig
+*_backup*/
+*_before_*.docx
+
+# Notebook and test caches
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+
+# Model binaries outside the ignored backend/models folder
+*.pkl
+*.joblib
+
+# Additional credentials and service configuration
+*.pem
+*.crt
+*.cer
+google-services.json
+GoogleService-Info.plist
+credentials*.json
+service-account*.json
+secrets.properties
+
+# Android release outputs and profiling dumps
+/app/release/
+/app/debug/
+*.apks
+*.hprof
+output-metadata.json
+
+# Local AI assistant and editor settings
+.claude/settings.local.json
+.vscode/
+
+# Operating system files
+Thumbs.db
+desktop.ini

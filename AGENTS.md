@@ -2,11 +2,14 @@
 
 ## Project Structure & Module Organization
 
-OATPrediction is a single-module Android application using Kotlin, Jetpack Compose, and Material 3. The current UI is a starter greeting screen.
+OATPrediction is a single-module Android application using Kotlin, Jetpack Compose, and Material 3. The Android app contains Home, introduction, prediction, result, analysis, guide, and local history flows, with ViewModels, Retrofit, and Room. A separate `backend/` contains a Flask REST API integrated with the trained MLR/CART artifacts and deployed on PythonAnywhere. Android follows the five-predictor contract, and the live Android-to-API flow has been verified on a connected device.
 
 - `app/src/main/java/com/example/oatprediction/`: application source; `MainActivity.kt` hosts the Compose UI, and `ui/theme/` defines colors, typography, and theming.
 - `app/src/main/res/`: Android strings, themes, icons, and XML configuration. `app/src/main/AndroidManifest.xml` declares application components.
 - `app/src/test/`: local JVM tests. `app/src/androidTest/`: device and emulator tests.
+- `backend/`: Flask API, local deployment bundle, model inference service, and backend tests. Private `.joblib` artifacts remain ignored by Git.
+- `docs/`: product, architecture, API, ML, and testing references.
+- `SKRIPSI/`: local thesis and research data; keep private research files out of commits unless explicitly intended.
 - `app/build.gradle.kts`: Android module configuration. `gradle/libs.versions.toml`: dependency and plugin versions. Root Gradle files configure repositories and the wrapper.
 
 ## Build, Test, and Development Commands
@@ -31,7 +34,7 @@ Use JUnit 4 for local logic tests and AndroidJUnit4 for instrumented tests; Espr
 
 ## Commit & Pull Request Guidelines
 
-This checkout has no Git metadata, so historical commit conventions cannot be verified. Use concise, imperative commit subjects, such as `Add prediction input validation`. Keep changes focused. Pull requests should describe behavior changes, link relevant issues, report validation performed, and include screenshots for UI changes.
+This checkout has Git metadata, but historical commit conventions have not been reviewed. Use concise, imperative commit subjects, such as `Add prediction input validation`. Keep changes focused. Pull requests should describe behavior changes, link relevant issues, report validation performed, and include screenshots for UI changes.
 
 ## Security & Configuration
 
@@ -78,23 +81,17 @@ Machine Learning:
 - Multiple Linear Regression untuk prediksi numerik
 - Decision Tree menggunakan algoritma CART untuk klasifikasi
 
-### Planned Prediction Inputs
+### Approved Prediction Inputs
 
-Variabel input yang direncanakan:
+The latest `SKRIPSI/SKRIPSI.docx` is the authority for research variables. The model uses exactly five predictors:
 
-1. Nama/Puskesmas
-2. Kategori OAT
-3. Stok Awal
-4. Penerimaan Obat
-5. Pemakaian Obat
-6. Jumlah Pasien TBC
-7. Permintaan Obat Periode Sebelumnya, apabila variabel ini dipertahankan setelah validasi dataset dan metodologi penelitian
+1. Puskesmas (categorical; one-hot encoded for both MLR and CART)
+2. Pemakaian (boxes used during form month `t`)
+3. Sisa Stok (boxes remaining at the end of form month `t`)
+4. Penerimaan (boxes received during form month `t`)
+5. Kasus Baru TBC (new patients beginning OAT treatment during form month `t`)
 
-Target:
-
-- Permintaan Obat
-
-Periode Bulan/Tahun merupakan atribut pencatatan/temporal dan tidak boleh otomatis dianggap sebagai predictor tanpa keputusan metodologis.
+The dependent target `Y` is the OAT demand recorded on the LPLPO form for month `t`, intended for month `t+1`. Historical `Y` is used only as the training/evaluation target and to derive CART labels; the app must not request `Y` as an input. Do not use prior-period demand as predictor X7. The study is limited to OAT Dewasa Kategori 1, so category is not a model feature or prediction-form input. Month/year identifies form month `t` and is metadata for the next-month horizon, not a predictor.
 
 ### Machine Learning Rules
 
@@ -110,6 +107,7 @@ Periode Bulan/Tahun merupakan atribut pencatatan/temporal dan tidak boleh otomat
 7. Jangan membuat model Machine Learning sebelum diminta secara eksplisit.
 8. Jangan membuat hasil penelitian, metrik evaluasi, atau angka performa secara fiktif.
 9. Jangan membuat dataset penelitian fiktif.
+10. Gunakan lima prediktor yang disetujui dalam skripsi; jangan menambah X7, kategori OAT, atau Y aktual sebagai input model/aplikasi.
 
 ### Dummy Data Rules
 
@@ -150,9 +148,7 @@ Nilai 0 hanya digunakan jika sumber data memang menunjukkan nilai/transaksi ters
 
 Hindari target leakage.
 
-Variabel target tidak boleh digunakan sebagai predictor untuk periode yang sama.
-
-Permintaan periode sebelumnya hanya boleh digunakan sebagai predictor jika secara metodologis dipertahankan dan nilainya memang tersedia sebelum periode target.
+Y aktual tidak boleh menjadi predictor. Untuk setiap formulir `t`, prediktor berasal dari lima variabel X pada formulir `t`, sedangkan Y pada formulir yang sama adalah permintaan untuk `t+1`. Permintaan periode sebelumnya bukan predictor pada metodologi terbaru.
 
 ### Development Rules
 
@@ -217,7 +213,7 @@ Do not duplicate large documentation unnecessarily inside AGENTS.md.
 
 ### Documentation Authority
 
-`docs/PRD.md` is the primary source of truth for product requirements.
+`SKRIPSI/SKRIPSI.docx` is the primary source for approved research scope and methodology. `docs/PRD.md` is the primary source of truth for product requirements.
 
 `docs/ARCHITECTURE.md` is the primary reference for technical architecture.
 
@@ -231,17 +227,11 @@ If implementation conflicts with these documents, do not silently change the req
 
 ### Current Development State
 
-The project is currently at the initial Android application stage.
+The Android application has its main screens, Retrofit client, local Room history, and extensive unit/instrumentation test sources. The main MLR and CART pipelines are trained and verified from Colab artifacts. Flask loads them through the approved five-predictor API contract and is live at `https://syamildeveloper.pythonanywhere.com`; `/health`, a valid prediction request, and HTTP 422 validation have been confirmed.
 
-The Android Studio starter project exists.
+Phases 3 and 4 aligned the Android form, domain model, DTO, validation, local history, and Room migration to the five approved predictors; Retrofit defaults to the PythonAnywhere HTTPS endpoint. The connected Android-to-API test and Room history migration test pass. Legacy history values remain preserved separately and are never converted into missing predictors. The trained `.joblib` files and generated deployment bundle remain local and are ignored by Git.
 
-MLR and Decision Tree have NOT been implemented.
-
-Flask backend has NOT been implemented yet.
-
-The next development stage is planning and establishing the application architecture before feature implementation.
-
-Do not implement Machine Learning at the current stage.
+Do not treat old dummy responses, historical UI fixtures, or example request values as model results or research data.
 
 ### Planning Workflow
 

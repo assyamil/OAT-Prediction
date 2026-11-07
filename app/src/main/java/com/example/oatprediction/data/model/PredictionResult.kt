@@ -4,6 +4,7 @@ package com.example.oatprediction.data.model
 data class PredictionResult(
     val prediksiMlr: Double,
     val klasifikasiDt: NeedLevel,
+    val source: ResultSource = ResultSource.DUMMY,
 )
 
 enum class NeedLevel {
